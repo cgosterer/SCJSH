@@ -8,9 +8,12 @@ Chris Osterer:
 	Part 5: Execution
 	Part 6: I/O Redireection
 	Part 7: Pipes
+	
+	Built-ins:
+			exit
 
 Jonathan Molina:
-	Part4 4: Path Resolution
+	Part 4: Path Resolution
 
 Steven Perez:
 	Part 2: Environemental Variables

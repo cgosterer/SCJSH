@@ -1,12 +1,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
 
 int main()
 {
+	struct timeval start;
+	struct timeval end;
+	long int timedif;						// time difference between start and end of shell
+	int timedummy1 = gettimeofday(&start, NULL);			// timedummy1 only used to make sure return val doesnt mean error
+	//printf("%ld seconds\n", start.tv_sec);
+
 
 	int has_exit = 0;
 	char token[256];        // holds instruction token
@@ -17,11 +28,16 @@ while (has_exit == 0)
 {
 
 	printf("Please enter an instruction:");
-	int numI = 0;                // number of tokens in an instruction
+	int numI = 0;	                // number of tokens in an instruction
 	do {                            // loop reads character sequences  separated by whitespace
 		scanf( "%s", token);
+
 		if ( strcmp(token, "exit") == 0)
 		{
+		        int timedummy2  = gettimeofday(&end, NULL);		// timedummy2 only used to see if error is returned
+			timedif = end.tv_sec - start.tv_sec;
+        		//printf("%ld seconds\n", end.tv_sec);
+
 			has_exit = 1;
 			//break;
 		}
@@ -67,7 +83,7 @@ while (has_exit == 0)
 
 
 	free(bucket);    			//free dynamic memory
-	printf("Exiting...\n");
+	printf("Exiting...\n\t Session Time:  %lds\n", timedif);
 return 0;
 
 }
