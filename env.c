@@ -3,19 +3,24 @@
 #include<ctype.h>
 #include<string.h>
 
+
 void prompt() {
   printf("%s@%s :: %s ->", getenv("USER"), getenv("MACHINE"), getenv("PWD"));
 }
 
+/* Utility function takes in a string and replaces any section of the form $NAME with Environment variable's VALUE*/
+/* Returns 0 on a success, returns 1 if the variable is undefined*/
 int readEnv(char * str, int size) {
   char temp[size];
   char name[size];
   char * value;
   int i, j, k;
+  /* Initializes temp string to null characters to avoid potential errors*/
   for(i = 0; i < size; i++)
     {
       temp[i] = '\0';
     }
+  /* Loop through each character, looking for $'s to indicate environment variables*/
   for(i = j = 0; i < size & str[i] != '\0'; i++, j++)
     {
       if(str[i] != '$')
@@ -41,5 +46,5 @@ int readEnv(char * str, int size) {
 	}	
     }
   strcpy(str, temp);
-  return 0; //0 indicates successful run
+  return 0;
 }
