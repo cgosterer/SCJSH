@@ -20,8 +20,8 @@ int main()
 
 	const int INST_SIZE = 256;
 	int has_exit = 0;
-	char token[INST_SIZE];        // holds instruction token
-	char ** bucket;         // array that holds all instruction tokens
+	char token[INST_SIZE];          // holds instruction token
+	char ** bucket;         	// array that holds all instruction tokens
 	char temp[INST_SIZE];		// used to split instruction tokens containing special characters
 
 	while (has_exit == 0)
@@ -32,16 +32,6 @@ int main()
 	    do {                            // loop reads character sequences  separated by whitespace
 	      scanf( "%s", token);
 	      readEnv(token, INST_SIZE);
-	      if ( strcmp(token, "exit") == 0)
-		{
-		  int timedummy2  = gettimeofday(&end, NULL);		// timedummy2 only used to see if error is returned
-		  timedif = end.tv_sec - start.tv_sec;
-		  //printf("%ld seconds\n", end.tv_sec);
-		  
-		  has_exit = 1;
-		  //break;
-		}
-
 	      int i;
 	      int start;
 	      start = 0;
@@ -56,17 +46,16 @@ int main()
 			  bucket = addToken(bucket, temp, numI);
 			  numI++;
 			}
-		      
+
 		      char specialChar[2];
 		      specialChar[0] = token[i];
 		      specialChar[1] = '\0';
-		      
 		      bucket = addToken(bucket,specialChar,numI);
 		      numI++;
 		      start = i + 1;
 		    }
 		}
-	      
+
 	      if (start < strlen(token))
 		{
 		  memcpy(temp, token + start, strlen(token) - start);
@@ -76,16 +65,17 @@ int main()
 		}
 
 	    }while('\n' != getchar());     //until end of line is reached, end do while loop
-	    
-	    printTokens(bucket, numI);	// print the tokens
 
 	  } 					//until "exit" is read in
 
 
+	int timedummy2  = gettimeofday(&end, NULL);// timedummy2 only used to see if error is returned
+	timedif = end.tv_sec - start.tv_sec;
+
 	free(bucket);    			//free dynamic memory
 	printf("Exiting...\n\t Session Time:  %lds\n", timedif);
 	return 0;
-	
+
 }
 
 //reallocates instruction array to hold another token,
@@ -120,32 +110,42 @@ void printTokens(char** instr, int numTokens)
 		printf("#%s#\n", instr[i]);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int executeTokens(char** instr, int numTokens)
+{
+  int i, j, k;
+  char **cmnd;
+  for(i = 0; i < numTokens; i++)
+    {
+      j = i;
+      while(j < numTokens && strcmp(instr[j], "|") != 0)
+	j++;
+      cmnd = (char**) malloc((j-i+1) * sizeof(char*));
+      for(k = 0; k < j - i; k++)
+	{
+	  cmnd[k] = instr[i + k];
+	}
+      cmnd[k] = NULL;
+      if(strcmp(cmnd[0], "exit") == 0)
+	return 1;
+      else if(strcmp(cmnd[0], "echo") == 0)
+	{
+	  for(k = 1; cmnd[k] != NULL; k++)
+	    {
+	      printf("%s ", cmnd[k]);
+	    }
+	  printf("\n");
+	}
+      else if(strcmp(cmnd[0], "cd") == 0)
+	{
+	  chdir(cmnd[1]);
+	  //Needs to change PWD to new directory, implement when Jonathan finishes pathnames
+	}
+      else
+	myexec(cmnd);
+      free(cmnd);
+      i = j;
+    }
+  return 0;
+}
 
 
