@@ -6,9 +6,11 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include "./env.c"
+#include "exec.c"
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
+int executeTokens(char** instr, int numTokens);
 
 int main()
 {
@@ -66,8 +68,9 @@ int main()
 
 	    }while('\n' != getchar());     //until end of line is reached, end do while loop
 
-	  } 					//until "exit" is read in
+	    has_exit = executeTokens(bucket, numI);	// executes the instruction based on the tokens, sets has_exit if needed
 
+	  } 					//until "exit" is read in
 
 	int timedummy2  = gettimeofday(&end, NULL);// timedummy2 only used to see if error is returned
 	timedif = end.tv_sec - start.tv_sec;
@@ -75,7 +78,6 @@ int main()
 	free(bucket);    			//free dynamic memory
 	printf("Exiting...\n\t Session Time:  %lds\n", timedif);
 	return 0;
-
 }
 
 //reallocates instruction array to hold another token,
@@ -147,5 +149,3 @@ int executeTokens(char** instr, int numTokens)
     }
   return 0;
 }
-
-
