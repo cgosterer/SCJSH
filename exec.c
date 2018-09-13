@@ -27,6 +27,7 @@ void myexec(char ** cmd)				// this will exec a given command given the proper p
 		waitpid(pid, &status, 0);
 }
 
+/*
 int main()
 {
 	char * cmd1[4] = {"/bin/ls", "-l", "-a", NULL};	// must adjust parser to get command location in the PATH
@@ -35,3 +36,4 @@ int main()
 
 	return 0;
 }
+*/

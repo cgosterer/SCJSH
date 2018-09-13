@@ -18,10 +18,21 @@ Jonathan Molina:
 Steven Perez:
 	Part 2: Environemental Variables
 	Part 3: Prompt
+	Integration of parts 1 & 5
+	makefile
+
+	Built-ins:
+			cd, echo
 
 How to Compile executable using makefile:
+Simply call the make command to have gcc compile the parser.c file w/ other files
 
 Known Bugs and unfinished portions of the project:
+Currently does not update prompt with changes in PWD
+Currently does not support relative pathnames or PATH searches
+Currently does not support I/O Redirection or Pipes
+Currently lacks io built in
+Curently lacks functionality for background processing
 
 Content of Tar Archive and description of files:
 
