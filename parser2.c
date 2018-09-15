@@ -11,6 +11,8 @@
 #include "./env2.c"
 #include "./exec_and_io.c"
 #include "./redir.c"
+#include "./getcmdpath.c"
+
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
@@ -115,8 +117,6 @@ int main()
                                 printf("Imporper combination of  processing operator\n");
 		}
 
-
-
 		if(strcmp(bucket[0], "io") == 0)
 		{
 			pid_t pid;
@@ -163,6 +163,21 @@ int main()
 
 			if(strcmp(bucket[numI - 2],"<") == 0 )
 				redir(leftof, bucket[numI -1], 'r');
+		}
+
+		else												// now try to exec the command
+		{
+			if( 	getcmdloc(bucket[0]) == false		)
+				printf("%s: command not found\n", bucket[0]);
+
+			else
+			{
+				printf("the new bucket[0] is %s\n", bucket[0] );
+				 printf("the bucket[1] is %s\n", bucket[1] );
+				 printf("the new bucket[2] is %s\n", bucket[2] );
+
+			}
+
 		}
 
 

@@ -16,7 +16,6 @@ void myexec(char ** cmd, bool hasio)	// bool hasio     this will exec a given co
 	int status;
 	pid_t pid = fork();
 	sprintf(pfilename, "/proc/%d/io", pid);
-
 	FILE * readfile = fopen(pfilename, "r");
 
 
@@ -36,7 +35,8 @@ void myexec(char ** cmd, bool hasio)	// bool hasio     this will exec a given co
 	{
 		//waitpid(pid, &status, 0);					// io code here looks like wait needs to be at end
 
-		//if(hasio == true)
+		if(hasio == true)
+		{
 			//fgets(stats, 100, readfile);
 			//printf("%s", stats);
 
@@ -83,6 +83,9 @@ void myexec(char ** cmd, bool hasio)	// bool hasio     this will exec a given co
                         printf("\n");
 
 		waitpid(pid, &status, 0);
+		}						// end hasio == true if statement
+
+		waitpid(pid, &status, 0);
 	}
 }
 
@@ -91,7 +94,7 @@ int main()
 {
 	char * cmd1[4] = { "/bin/ls", "-l", "-a", NULL};	// must adjust parser to get command location in the PATH
 	char * cmd2[2] = {"/bin/pwd", NULL};			// also must count number of flags arguments so we know how big to make char * cmdx
-	myexec(cmd1, true);
+	myexec(cmd1, false);
 
 	int n = sizeof(cmd1)/sizeof(cmd1[0]);
 	printf("cmd1 has %d elements\n", n);
