@@ -116,6 +116,7 @@ int executeTokens(char** instr, int numTokens)
 {
   int i, j, k;
   char **cmnd;
+  char *buff;
   for(i = 0; i < numTokens; i++)
     {
       j = i;
@@ -140,7 +141,10 @@ int executeTokens(char** instr, int numTokens)
       else if(strcmp(cmnd[0], "cd") == 0)
 	{
 	  chdir(cmnd[1]);
-	  //Needs to change PWD to new directory, implement when Jonathan finishes pathnames
+	  k = pathconf(".", _PC_PATH_MAX) * sizeof(char);
+	  buff = (char *) malloc(k);
+	  setenv("PWD", getcwd(buff, k), 1);
+	  free(buff);
 	}
       else
 	myexec(cmnd);
