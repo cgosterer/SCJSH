@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 char * absolutePath(char * pathwayOptions, char * command){
 
 //char * commandPath;
