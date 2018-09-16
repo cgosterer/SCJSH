@@ -16,15 +16,22 @@ void redir(char ** cmd, char * filename, char type)	// this will exec a given co
 	{
 		if(type == 'r')
 		{
-			int irfile = open(filename, O_RDONLY  );		//  irfile = input redirection file
-			dup2(irfile, 0);
-			close(irfile);
-			execv(cmd[0], cmd);
+			int irfile;
+			irfile = open(filename, O_RDONLY  );
+			if(irfile > -1)		//  irfile = input redirection file
+			{
+				dup2(irfile, 0);
+				close(irfile);
+				execv(cmd[0], cmd);
+			}
+			else
+				printf("%s: No such file or directory\n", filename);
 		}
 
 		if (type == 'w')
 		{
-			int orfile = open( filename, O_RDWR | O_TRUNC | O_CREAT , S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR );	// orfile = output redirection file
+			int orfile;
+			orfile = open( filename, O_RDWR | O_TRUNC | O_CREAT , S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR );	// orfile = output redirection file
 			dup2(orfile, 1);
 			close(orfile);
 			execv(cmd[0], cmd);

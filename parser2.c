@@ -101,11 +101,16 @@ int main()
 		//printf("numI is %d\n", numI);				// print number of tokens
 
 		if ( strcmp(bucket[0],"<")== 0 || strcmp(bucket[0], ">") == 0 ||strcmp(bucket[numI - 1], "<") == 0 || strcmp(bucket[numI - 1], ">") == 0 )
-			printf("Syntax error near redirection operator\n");
-
+		{
+			printf("Syntax error near unexpected token `newline'\n");
+			continue;
+		}
 
 		if ( strcmp(bucket[0],"|") == 0 || strcmp(bucket[numI - 1], "|") == 0  )
-                        printf("Syntax error near  pipe operator\n");
+		{
+                        printf("Syntax error near unexpected token `|'\n");
+			continue;
+		}
 
 		int q;
 		for(q = 0; q < numI - 1; q++)
@@ -135,7 +140,14 @@ int main()
 			{
 				DIR * d = opendir(bucket[1]);
 				if(d)
+				{
 					chdir(bucket[1]);
+					long int k = pathconf(".", _PC_PATH_MAX) * sizeof(char);
+					char * buff = (char *) malloc(k);
+					setenv("PWD", getcwd(buff, k), 1);
+	  				free(buff);
+				}
+
 				else if (ENOENT == errno)
 					printf("%s: No such file or directory.\n", bucket[1]);
 			}
@@ -147,7 +159,6 @@ int main()
 		{
 			int i;
 			char ** leftof = malloc( (numI - 1) * sizeof(char*) );
-			//char * cmd1[4] = {"/bin/ls", "-l", "-a", NULL};					 example test command to ake sure this section works
 
 			for(i = 0; i < numI - 2; i++)
 			{
@@ -155,43 +166,56 @@ int main()
 				printf("the string copied is: %s\n", leftof[i]);				// left of now has {"ls","-l","-a", NULL}
 			}											// must replace ls with its path though (/bin/ls)
 			leftof[numI - 2] = NULL;								// look at above example command
-			strcpy(leftof[0], "/bin/grep");								// must insert for now, must make function that takes ls and returns its path
-			printf("the first elemenet of leftof is %s\n",leftof[0]);				// strcpy( leftof[0], func(leftof) ) func must return path of ls as a char *
+			//printf("the first elemenet of leftof is %s\n",leftof[0]);				// strcpy( leftof[0], func(leftof) ) func must return path of ls as a char *
 
-			if (strcmp(bucket[numI - 2],">") == 0 )
-				redir(leftof, bucket[numI -1], 'w');
+			if(     getcmdloc(leftof[0]) == false           )                                       // command doesnt exist
+                                printf("%s: command not found\n", bucket[0]);
+			else
+			{
 
-			if(strcmp(bucket[numI - 2],"<") == 0 )
-				redir(leftof, bucket[numI -1], 'r');
+				if (strcmp(bucket[numI - 2],">") == 0 )
+					redir(leftof, bucket[numI -1], 'w');
+
+				if(strcmp(bucket[numI - 2],"<") == 0 )
+					redir(leftof, bucket[numI -1], 'r');
+			}
 		}
 
 		else												// now try to exec the command
 		{
-			if( 	getcmdloc(bucket[0]) == false		)
+			if( 	getcmdloc(bucket[0]) == false		)					// command doesnt exist
 				printf("%s: command not found\n", bucket[0]);
 
-			else
+			else											// command exist and should be run with exec
 			{
-				printf("the new bucket[0] is %s\n", bucket[0] );
-				 printf("the bucket[1] is %s\n", bucket[1] );
-				 printf("the new bucket[2] is %s\n", bucket[2] );
+				 //printf("the new bucket[0] is %s\n", bucket[0] );
+				 //printf("the bucket[1] is %s\n", bucket[1] );
+				 //printf("the new bucket[2] is %s\n", bucket[2] );
+				 //printf("the new bucket[3] is %s\n", bucket[3] );
 
+				char ** leftof = malloc( (numI + 1) * sizeof(char*) );
+                        	//char * cmd1[4] = {"/bin/ls", "-l", "-a", NULL};                                        example test command to ake sure this section w$
+				int i;
+                        	for(i = 0; i < numI ; i++)
+                        	{
+                                	leftof[i] = bucket[i];
+                                	//printf("the string copied is: %s\n", leftof[i]);                                // left of now has {"ls","-l","-a", NULL}
+                        	}
+                                            								                 // must replace ls with its path though (/bin/ls)
+                        	leftof[numI] = NULL;
+				myexec(leftof, false);
 			}
+		}									// end executing command else
 
-		}
+	     }										// end if not echo cmd
 
-
-
-	     }
-
-	  } 								//until "exit" is read in
+	  } 										//until "exit" is read in
 
 
-	free(bucket);    						//free dynamic memory
+	free(bucket);    								//free dynamic memory
 	printf("Exiting...\n\t Session Time:  %lds\n", timedif);
 	return 0;
 }									// end main
-
 									//reallocates instruction array to hold another token		//returns new pointer to instruction array
 char** addToken(char** instr, char* tok, int numTokens)
 {
@@ -210,7 +234,6 @@ char** addToken(char** instr, char* tok, int numTokens)
 		free(instr);
 	return new_arr;
 }
-
 void printTokens(char** instr, int numTokens)
 {
 	int i;
