@@ -3,14 +3,14 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
-char * absolutePath(char * pathwayOptions, char * command){
+char * absolutePath(char * command){
 
 //char * commandPath;
 char *r = strdup;
 // check for errors
 char * temp, *r, *tok;
 
-r = temp = strdup("/home/majors/molina/.bin:/home/majors/molina/.scripts:/usr/local/bin:/opt/sfw/bin:/usr/sfw/bin:/bin:/usr/bin:/usr/ccs/bin:/usr/ucb:");
+r = temp = strdup(getenv("PATH"));
 assert(temp != NULL);
 
 while ((tok = strsep(&temp, ":")) != NULL) {
