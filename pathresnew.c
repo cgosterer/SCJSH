@@ -24,8 +24,8 @@ while ((tok = strsep(&temp, ":")) != NULL) {
 free(r);
 }
 bool fileCheck(char * pathway, char * command){
-	pathway = strcat("/", pathway);
-	pathway = strcat(command, pathway);
+	pathway = strcat(pathway, "/");
+	pathway = strcat(pathway, command);
 	if (file_exists(pathway) == 1){
 	return 1;}
 	else 
