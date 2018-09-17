@@ -6,40 +6,37 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 
-void myexec(char ** cmd, bool hasio)	// bool hasio     this will exec a given command given the proper path location, typically in bin/<cmd>
+void myexecio(char ** cmd, bool hasio)	// bool hasio     this will exec a given command given the proper path location, typically in bin/<cmd>
 {					// isio means is there an io built in that needs to be handled
 
 	char pfilename[30];		// proc filename
 	char stats[150];		// the stats from the proc file
 	int status;
 	pid_t pid = fork();
-	sprintf(pfilename, "/proc/%d/io", pid);
-	FILE * readfile = fopen(pfilename, "r");
-
 
 	if (pid == -1)
 	{
 		exit(1);							// error starting child process
 	}
-
 	else if (pid == 0)
 	{
 		execv(cmd[0], cmd);
 		printf("problem executing %s\n", cmd[0]);			// io code here?
 		exit(1);
 	}
-
 	else
 	{
-		//waitpid(pid, &status, 0);					// io code here looks like wait needs to be at end
+		sprintf(pfilename, "/proc/%d/io", pid);
+		printf("the pid is %d\n", pid);
+		FILE * readfile = fopen(pfilename, "r");
+
+		 //waitpid(pid, &status, 0);
 
 		if(hasio == true)
 		{
-			//fgets(stats, 100, readfile);
-			//printf("%s", stats);
-
 			fscanf(readfile, "%s", stats);
 			printf("\t\t%s", stats);
 			fscanf(readfile, "%s", stats);
@@ -82,10 +79,11 @@ void myexec(char ** cmd, bool hasio)	// bool hasio     this will exec a given co
                         printf("\t%s", stats);
                         printf("\n");
 
-		waitpid(pid, &status, 0);
+			//waitpid(pid, &status, 0);		// -1 was pid
 		}						// end hasio == true if statement
 
-		waitpid(pid, &status, 0);
+		waitpid(pid, &status, 0);			// -1 was pid
+		printf("after waiting\n");
 	}
 }
 

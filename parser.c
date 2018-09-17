@@ -7,6 +7,8 @@
 #include <sys/time.h>
 #include "./env.c"
 #include "exec.c"
+#include "getcmdpath.c"
+#include "exec_and_io.c"
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
@@ -146,8 +148,28 @@ int executeTokens(char** instr, int numTokens)
 	  setenv("PWD", getcwd(buff, k), 1);
 	  free(buff);
 	}
-      else
-	myexec(cmnd);
+
+	else if (strcmp(cmnd[0], "io") == 0)
+	{
+		char ** minusio = malloc(numTokens * sizeof(char*));
+		int i;
+		for ( i = 1; i < numTokens; i++)					// getting rid of io so we can run the actual command for now
+			minusio[i-1] = cmnd[i];
+		minusio[numTokens - 1] = NULL;
+
+		if( getcmdloc(minusio[0]) == false )                                       // if command doesnt exist show error message
+                                printf("%s: command not found\n", cmnd[0]);
+		else
+			myexecio(minusio, true);
+	}
+
+      else										// execute the command
+	{
+		if( getcmdloc(cmnd[0]) == false )					// if command doesnt exist show error message
+				printf("%s: command not found\n", cmnd[0]);
+		else
+			myexec(cmnd);
+	}
       free(cmnd);
       i = j;
     }
