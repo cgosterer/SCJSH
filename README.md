@@ -34,11 +34,10 @@ How to Compile executable using makefile:
 Simply call the make command to have gcc compile the parser.c file w/ other files
 
 Known Bugs and unfinished portions of the project:
-Currently does not update prompt with changes in PWD - fixed in parser2.c 9/13
-Currently does not support relative pathnames or PATH searches
-Currently does not support I/O Redirection or Pipes - basic functionaily included in parser2.c still needs work 9/13
-Currently lacks io built in - included in parser2.c, -> io ls -l -a will show the table for io stats 9/13
-Curently lacks functionality for background processing
+Currently does not support relative pathnames or PATH searches -- John is nearly done with this
+Currently does not support I/O Redirection or Pipes - basic functionaily included in parser2.c still needs work 9/13 -- I/O Reidrection done, Steven will work on Pipes
+Currently lacks io built in - included in parser2.c, -> io ls -l -a will show the table for io stats 9/13 -- Chris is nearly done with this
+Curently lacks functionality for background processing -- John will start this after finishing pathnames
 
 Content of Tar Archive and description of files:
 
