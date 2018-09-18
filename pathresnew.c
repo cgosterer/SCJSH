@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include "env.c"
 char * absolutePath(char * command){
 
 //char * commandPath;
@@ -11,6 +12,7 @@ char *r = strdup;
 char * temp, *r, *tok;
 
 r = temp = strdup(getenv("PATH"));
+readenv(temp, strlen(temp));
 assert(temp != NULL);
 
 while ((tok = strsep(&temp, ":")) != NULL) {
