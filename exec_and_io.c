@@ -6,11 +6,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include <pthread.h>
 
 
 void myexecio(char ** cmd, bool hasio)	// bool hasio     this will exec a given command given the proper path location, typically in bin/<cmd>
-{					// isio means is there an io built in that needs to be handled
+{
 
 	char pfilename[30];		// proc filename
 	char stats[150];		// the stats from the proc file
@@ -29,8 +28,7 @@ void myexecio(char ** cmd, bool hasio)	// bool hasio     this will exec a given 
 	}
 	else
 	{
-		sprintf(pfilename, "/proc/%d/io", pid);
-		printf("the pid is %d\n", pid);
+		sprintf(pfilename, "/proc/%d/io", pid);				// x was pid
 		FILE * readfile = fopen(pfilename, "r");
 
 		 //waitpid(pid, &status, 0);
@@ -79,24 +77,12 @@ void myexecio(char ** cmd, bool hasio)	// bool hasio     this will exec a given 
                         printf("\t%s", stats);
                         printf("\n");
 
-			//waitpid(pid, &status, 0);		// -1 was pid
+			waitpid(pid, &status, 0);		// -1 was pid
 		}						// end hasio == true if statement
 
+		//wait(0);
 		waitpid(pid, &status, 0);			// -1 was pid
-		printf("after waiting\n");
+		return;
 	}
 }
 
-/*
-int main()
-{
-	char * cmd1[4] = { "/bin/ls", "-l", "-a", NULL};	// must adjust parser to get command location in the PATH
-	char * cmd2[2] = {"/bin/pwd", NULL};			// also must count number of flags arguments so we know how big to make char * cmdx
-	myexec(cmd1, false);
-
-	int n = sizeof(cmd1)/sizeof(cmd1[0]);
-	printf("cmd1 has %d elements\n", n);
-
-	return 0;
-}
-*/
