@@ -1,10 +1,69 @@
+#include <stdio.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+
 char* shrinkDirectory(char* path); // for ..
 char* resolveSpecialChars(char* str); //resolves . .. ~
 char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* source); //replaces characters bewtween start and end. source is inserted
 char* removeDynamicChar(char* line, size_t start, size_t end); // removes chars from dynamic arrays
 char* strPush(char* dest, char source); // pushes a char onto a dynam array
+//for testing
+int main(){
+	//printf("PATH : %s\n", getenv("PATH"));
+   	//printf("HOME : %s\n", getenv("HOME"));
+   	//printf("PWD : %s\n", getenv("PWD"));
+	
+	char* pathWorkingDir = getenv("PWD");
+	char* testHome = getenv("HOME");
+
+	if(strcmp("/home/majors/molina/OSproj1", pathWorkingDir) != 0){
+		printf("Test pwd is wrong\n");
+	} else {
+		printf("Test pwd is right\n");
+	}
+	
+
+	printf("Starting text X\n");
+	if(strcmp("gonna fail", resolveSpecialChars("./")) != 0){
+		printf("Test X is wrong\n");
+	} else {
+		printf("Test X is right\n");
+	}
+
+	printf("Starting test pwd real\n");
+	if(strcmp(pathWorkingDir, resolveSpecialChars("./")) != 0){
+		printf("Test text pwd is wrong\n");
+		printf("current Dir: %s\n", pathWorkingDir);
+		printf("test ./ : %s\n", resolveSpecialChars("./"));
+	} else {
+		printf("Test text pwd is right\n");
+	}
+
+	printf("Starting test home dir real\n");
+	if(strcmp(testHome, resolveSpecialChars("~/")) != 0){
+		printf("Test home dir is wrong\n");
+		printf("Home dir: %s\n", testHome);
+		printf("test ~/ : %s\n", resolveSpecialChars("~/"));
+	} else {
+		printf("Test text pwd is right\n");
+	}
+	
+	printf("Starting test dummy dir real\n");
+	char* testDummyDir = strcat(pathWorkingDir, "/dummy_dir");
+	if(strcmp(testDummyDir, resolveSpecialChars("dummy_dir/")) != 0){
+		printf("Test home dir is wrong\n");
+		printf("dir: %s\n", testDummyDir);
+		printf("test ~/ : %s\n", resolveSpecialChars("dummy_dir/"));
+	} else {
+		printf("Test text pwd is right\n");
+	}
 
 
+	return 0;
+}
+//end of testing
 char* strPush(char* dest, char ch)
 {
 	size_t setLength = strlen(dest) + 2;
@@ -18,6 +77,7 @@ char* strPush(char* dest, char ch)
 
 char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* source)
 {
+	//printf("got to replace\n");
 	size_t tempIndex = end - start + 1;
 	size_t lengthOfDest = strlen(dest);
 	size_t lengthOfSource = strlen(source);
@@ -30,7 +90,7 @@ char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* sour
 	int itrDest = 0;
 	int itrSource = 0;
 	int itrLast = 0;
-
+	//printf("mid of replace\n");
 	if (start == 0)
 		itrLast = end + 1;
 	else
@@ -45,13 +105,17 @@ char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* sour
 		else
 			newPath[newPathItr] = dest[itrLast++];
 	}
-	free(dest);
+	//printf("end of replace\n");
+	//free(dest);
+	//printf("end of replace after free\n");
+	
 	return newPath;
 }
 
 
 char* resolveSpecialChars(char* str)
 {
+	//printf("got to resolve");
 	char* absPath = str;
 
 	if ((strlen(absPath) == 1) && (strcmp(absPath, "/") == 0))
@@ -60,19 +124,30 @@ char* resolveSpecialChars(char* str)
 	// check for ~
 	if (absPath[0] == '~')
 	{
-		absPath = replaceSpecialChars(absPath, 0, 0, getenv("HOME"));
+		char* h = getenv("HOME");
+		absPath = replaceSpecialChars(absPath, 0, 0, h);
+	}
+	else if(absPath[0] != '.' || (absPath[0] != '.' && absPath[1] != '.') ){
+		printf("TODO finish code, add the pwd to front\n");
 	}
 
-	
+	//printf("got to 2 of resolve\n");
 	if (absPath[0] == '.' && absPath[1] != '.')// conditional for .
 	{
-		if (strcmp(getenv("PWD"), "/") == 0) //in root, delete both . and /
-			absPath = replaceSpecialChars(absPath, 0, 1, getenv("PWD"));
+		//printf("got to inside of conditional for .\n");
+		//printf("%s", getenv("PWD"));
 		
-		else   // else, only need to delete .
-			absPath = replaceSpecialChars(absPath, 0, 0, getenv("PWD"));
+		char* pwd = getenv("PWD");
+		if (strcmp(pwd, "/") == 0){ //in root, delete both . and /
+			//printf("got to deletion of . and /\n");
+			absPath = replaceSpecialChars(absPath, 0, 1, pwd);
+		}
+		else{   // else, only need to delete .
+			//printf("got to else for delete .\n");
+			absPath = replaceSpecialChars(absPath, 0, 0, pwd);
+		}
 	}
-
+	//printf("got to 2.5 of resolve\n");
 	if (absPath[0] == '.' && absPath[1] == '.')  // conditional for ..
 	{
 		char* pwd = getenv("PWD");
@@ -89,7 +164,7 @@ char* resolveSpecialChars(char* str)
 		absPath = replaceSpecialChars(absPath, 0, 1, newPwd);
 		free(newPwd);
 	}
-
+	//printf("got to 3 of resolve\n");
 	size_t strTracker = 1;
 	size_t tempSlash = 0;
 	size_t tempSlashTwo = 0;
@@ -133,7 +208,7 @@ char* resolveSpecialChars(char* str)
 		}
 		++strTracker;
 	}
-
+	//printf("got to end of resolve\n");
 	return absPath;
 }
 
@@ -157,7 +232,7 @@ char* removeDynamicChar(char* line, size_t end, size_t start)  // removes charac
 		tempChar = line[++tempItr1];
 	}
 	free(line);
-	line = NULL;
+	//line = NULL;
 	return dynamicLine;
 }
 
@@ -184,4 +259,3 @@ char* shrinkDirectory(char* path)   // removes a directory from a path
 
 	return removeDynamicChar(path, temp, arrayIndex);
 }
-
