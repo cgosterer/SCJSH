@@ -64,8 +64,7 @@ int main(){
 	return 0;
 }
 //end of testing
-char* strPush(char* dest, char ch)
-{
+char* strPush(char* dest, char ch){
 	size_t setLength = strlen(dest) + 2;
 	char* dynamicStr = (char*)calloc(setLength, sizeof(char));
 	strcpy(dynamicStr, dest);
@@ -75,8 +74,7 @@ char* strPush(char* dest, char ch)
 	return dynamicStr;
 }
 
-char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* source)
-{
+char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* source){
 	//printf("got to replace\n");
 	size_t tempIndex = end - start + 1;
 	size_t lengthOfDest = strlen(dest);
@@ -96,8 +94,7 @@ char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* sour
 	else
 		itrLast = end + 1;
 
-	for (newPathItr = 0; newPathItr < finalLength; newPathItr++)
-	{
+	for (newPathItr = 0; newPathItr < finalLength; newPathItr++){
 		if (newPathItr < start)
 			newPath[newPathItr] = dest[itrDest++];
 		else if ((newPathItr >= start) && (newPathItr <= start+lengthOfSource-1))
@@ -113,8 +110,7 @@ char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* sour
 }
 
 
-char* resolveSpecialChars(char* str)
-{
+char* resolveSpecialChars(char* str){
 	//printf("got to resolve");
 	char* absPath = str;
 
@@ -122,8 +118,7 @@ char* resolveSpecialChars(char* str)
 		return absPath;
 
 	// check for ~
-	if (absPath[0] == '~')
-	{
+	if (absPath[0] == '~'){
 		char* h = getenv("HOME");
 		absPath = replaceSpecialChars(absPath, 0, 0, h);
 	}
@@ -132,8 +127,7 @@ char* resolveSpecialChars(char* str)
 	}
 
 	//printf("got to 2 of resolve\n");
-	if (absPath[0] == '.' && absPath[1] != '.')// conditional for .
-	{
+	if (absPath[0] == '.' && absPath[1] != '.'){// conditional for .
 		//printf("got to inside of conditional for .\n");
 		//printf("%s", getenv("PWD"));
 		
@@ -148,19 +142,11 @@ char* resolveSpecialChars(char* str)
 		}
 	}
 	//printf("got to 2.5 of resolve\n");
-	if (absPath[0] == '.' && absPath[1] == '.')  // conditional for ..
-	{
+	if (absPath[0] == '.' && absPath[1] == '.'){  // conditional for ..
 		char* pwd = getenv("PWD");
 		char* newPwd = (char*)calloc(strlen(pwd)+1,sizeof(char));
 		strcpy(newPwd, pwd);
 		newPwd = shrinkDirectory(newPwd);
-		// attempt to hardcode fix changing to / from /home
-		//if (strcmp(newPwd,"")==0)
-		//{
-		//	absPath = replaceSpecialChars(absPath, 0, strlen(absPath)-1, "/");
-		//	free(newPwd);
-		//	return absPath;
-		//}
 		absPath = replaceSpecialChars(absPath, 0, 1, newPwd);
 		free(newPwd);
 	}
@@ -168,41 +154,34 @@ char* resolveSpecialChars(char* str)
 	size_t strTracker = 1;
 	size_t tempSlash = 0;
 	size_t tempSlashTwo = 0;
-	while (absPath[strTracker] != '\0')  // loop to look for . and .. anywhere in string
-	{
-		if (absPath[strTracker] == '.' && absPath[strTracker-1] == '.')
-		{
-			if (strTracker > 2)  //conditional for root
-			{
+	while (absPath[strTracker] != '\0'){  // loop to look for . and .. anywhere in string
+
+		if (absPath[strTracker] == '.' && absPath[strTracker-1] == '.'){
+			if (strTracker > 2){  //conditional for root
 				absPath = removeDynamicChar(absPath, tempSlashTwo, strTracker); 
 				strTracker = 0;// begin with 0 to recognize '/' locations
 				tempSlash = 0;
 				tempSlashTwo = 0;
-				if (strcmp(absPath,"") == 0)// empty string, down to root
-				{
+				if (strcmp(absPath,"") == 0){// empty string, down to root
 					absPath = strPush(absPath, '/');
 					return absPath;
 				}
 			}
-			else if (strlen(absPath) > 3)
-			{
+			else if (strlen(absPath) > 3){
 				absPath = removeDynamicChar(absPath, strTracker-2, strTracker);
 				strTracker = strTracker - 3;	// will be -1, ++strTracker at end of loop will make 0
 			}
-			else
-			{
+			else{
 				absPath = removeDynamicChar(absPath, strTracker-1, strTracker);
 				strTracker = strTracker - 2;
 			}
 		}
 		// check strlen to make sure no invalid memory read
-		else if ((strlen(absPath) >= 2) && absPath[strTracker-1] == '.' && absPath[strTracker] == '/')
-		{
+		else if ((strlen(absPath) >= 2) && absPath[strTracker-1] == '.' && absPath[strTracker] == '/'){
 			absPath = removeDynamicChar(absPath, strTracker-1, strTracker);
 			strTracker = strTracker - 2;
 		}
-		else if (absPath[strTracker] == '/')
-		{
+		else if (absPath[strTracker] == '/'){
 			tempSlashTwo = tempSlash;
 			tempSlash = strTracker;
 		}
@@ -212,8 +191,8 @@ char* resolveSpecialChars(char* str)
 	return absPath;
 }
 
-char* removeDynamicChar(char* line, size_t end, size_t start)  // removes characters from a dynamic array
-{
+char* removeDynamicChar(char* line, size_t end, size_t start){  // removes characters from a dynamic array
+
 
 	size_t number_characters = end - start + 1;
 	int strLength = strlen(line)+1;
@@ -223,10 +202,8 @@ char* removeDynamicChar(char* line, size_t end, size_t start)  // removes charac
 	size_t tempItr1 = 0;
 	size_t tempItr2 = 0;
 	char tempChar = line[tempItr1];
-	while (tempChar != '\0')
-	{
-		if (!((tempItr1 >= start) && (tempItr1 <= end)))
-		{
+	while (tempChar != '\0'){
+		if (!((tempItr1 >= start) && (tempItr1 <= end))){
 			dynamicLine[tempItr2++] = tempChar;
 		}
 		tempChar = line[++tempItr1];
@@ -236,8 +213,7 @@ char* removeDynamicChar(char* line, size_t end, size_t start)  // removes charac
 	return dynamicLine;
 }
 
-char* shrinkDirectory(char* path)   // removes a directory from a path
-{
+char* shrinkDirectory(char* path){   // removes a directory from a path
 	int temp = strlen(path) - 1;
 	int arrayIndex = temp;
 	char deletedChar = path[temp];
@@ -246,14 +222,13 @@ char* shrinkDirectory(char* path)   // removes a directory from a path
 		return path;
 	
 	
-	if (deletedChar == '/')   // '/' at end of path
-	{
+	if (deletedChar == '/'){   // '/' at end of path
 		deletedChar = path[--temp];
 	}
 	
 
-	while (deletedChar != '/')   // search for next '/'
-	{
+	while (deletedChar != '/'){   // search for next '/'
+	
 		deletedChar = path[--temp];
 	}
 
