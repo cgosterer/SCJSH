@@ -33,7 +33,7 @@ int main(){
 	}
 
 	printf("Starting test pwd real\n");
-	if(strcmp(pathWorkingDir, resolveSpecialChars("./")) != 0){
+	if(strcmp(pathWorkingDir, resolveSpecialChars(".")) != 0){
 		printf("Test text pwd is wrong\n");
 		printf("current Dir: %s\n", pathWorkingDir);
 		printf("test ./ : %s\n", resolveSpecialChars("./"));
@@ -42,23 +42,35 @@ int main(){
 	}
 
 	printf("Starting test home dir real\n");
-	if(strcmp(testHome, resolveSpecialChars("~/")) != 0){
+	if(strcmp(testHome, resolveSpecialChars("~")) != 0){
 		printf("Test home dir is wrong\n");
 		printf("Home dir: %s\n", testHome);
-		printf("test ~/ : %s\n", resolveSpecialChars("~/"));
+		printf("test ~/ : %s\n", resolveSpecialChars("~"));
 	} else {
 		printf("Test text pwd is right\n");
 	}
-	
+	/*
 	printf("Starting test dummy dir real\n");
 	char* testDummyDir = strcat(pathWorkingDir, "/dummy_dir");
 	if(strcmp(testDummyDir, resolveSpecialChars("dummy_dir/")) != 0){
 		printf("Test home dir is wrong\n");
 		printf("dir: %s\n", testDummyDir);
-		printf("test ~/ : %s\n", resolveSpecialChars("dummy_dir/"));
+		printf("test ~/ : %s\n", resolveSpecialChars("dummy_dir/"));  fixed this test case
 	} else {
 		printf("Test text pwd is right\n");
 	}
+	*/
+	printf("Starting .. real\n");
+        char* goUp = "/home/majors/molina";
+        if(strcmp(goUp, resolveSpecialChars("..")) != 0){
+                printf("Test home dir is wrong\n");
+                printf("dir: %s\n", goUp);
+                printf("test ../ : %s\n", resolveSpecialChars(".."));
+        } else {
+                printf("Test text pwd is right\n");
+                printf("test ../ : %s\n", resolveSpecialChars(".."));
+        }
+
 
 
 	return 0;
@@ -235,5 +247,8 @@ char* shrinkDirectory(char* path){   // removes a directory from a path
 		deletedChar = path[--temp];
 	}
 
-	return removeDynamicChar(path, temp, arrayIndex);
+	char* newDynPath = removeDynamicChar(path, temp, arrayIndex);
+        return newDynPath;
 }
+
+
