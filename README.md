@@ -17,7 +17,11 @@ Chris Osterer:
 
 	
 Jonathan Molina:
-	Part 4: Path Resolution
+	Part 4: Path Resolution, Special case handling 
+	Part 8: Background processing
+	
+	Built-ins:
+			cd
 
 Steven Perez:
 	Part 2: Environemental Variables
