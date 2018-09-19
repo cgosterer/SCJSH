@@ -123,7 +123,10 @@ char* resolveSpecialChars(char* str){
 		absPath = replaceSpecialChars(absPath, 0, 0, h);
 	}
 	else if(absPath[0] != '.' || (absPath[0] != '.' && absPath[1] != '.') ){
-		printf("TODO finish code, add the pwd to front\n");
+		// printf("this is str : %s\n", str);
+                char* prefix = getenv("PWD");
+               // printf("this is prefix : %s\n", prefix)  
+                return prefix;
 	}
 
 	//printf("got to 2 of resolve\n");
