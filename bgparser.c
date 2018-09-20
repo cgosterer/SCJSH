@@ -6,10 +6,9 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include "./env.c"
-#include "exec.c"
 #include "getcmdpath.c"
-#include "exec_and_io.c"
-#include "bbackground.c"
+#include "finalexec.c"
+
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
@@ -159,7 +158,8 @@ int executeTokens(char** instr, int numTokens)
 		if( getcmdloc(minusio[0]) == false )                                       // if command doesnt exist show error message
                                 printf("%s: command not found\n", cmnd[0]);
 		else
-			myexecio(minusio, true);
+			//myexecio(minusio, true);
+			myexec(minusio, 1 , 0 , 0,  0);
 	}
 
       else										// execute the command
@@ -168,18 +168,25 @@ int executeTokens(char** instr, int numTokens)
 				printf("%s: command not found\n", cmnd[0]);
 		else
 		{
-			if (strcmp(cmnd[0], "/bin/sleep") == 0 || strcmp(cmnd[0], "/bin/pwd") == 0)
-			{
-				bbexec(cmnd);									// execute in background
+			if (strcmp(cmnd[0], "/bin/sleep") == 0 || strcmp(cmnd[0], "/bin/pwd") == 0)			// needs to be changed if (& is in command)
+			{												// set flags when parsing command to know how to call myexec
+				myexec(cmnd,1,1,0,0);									// execute in background
 				int q, status;
                                 for (q=1;q <= poscounter; q++)
                                 {
                                         if (    waitpid( queue[q].pid, &status, WNOHANG) != 0   )               // was WNOHANG
                                         {
-                                                if( queue[q].cmd != NULL && queue[q].printed == false)
+                                                if( queue[q].cmd[0] != NULL && queue[q].printed == false)
                                                 {
-                                                        printf("[%d]+\t", q);
-                                                        printf("[%s]\n", queue[q].cmd);
+                                                        printf("[%d]+\t[", q);
+							int i = 0;
+							while(queue[q].cmd[i] != NULL)
+							{
+								printf("%s ", queue[q].cmd[i]);
+								i++;
+							}
+							printf("]\n");
+
                                                         queue[q].printed = true;
 
 							bool donequeue = true;
@@ -204,7 +211,7 @@ int executeTokens(char** instr, int numTokens)
 
 			else
 			{
-				myexec(cmnd);									// execute in foreground
+				myexec(cmnd, 0 , 0, 0 ,0);									// execute in foreground
 				int q, status;
 				for (q=1;q <= poscounter; q++)
 				{
@@ -212,14 +219,20 @@ int executeTokens(char** instr, int numTokens)
 					{
 						if( queue[q].cmd != NULL && queue[q].printed == false)
 						{
-    			                        	printf("[%d]+\t", q);
-                        				printf("[%s]\n", queue[q].cmd);
+    			                        	printf("[%d]+\t[", q);
+							int i = 0;
+                                                        while(queue[q].cmd[i] != NULL)
+                                                        {
+                                                                printf("%s ", queue[q].cmd[i]);
+                                                                i++;
+                                                        }
+                                                        printf("]\n");
+
 							queue[q].printed = true;
 						}
 					}
 				}
 			}
-
 		}
 	}
       free(cmnd);
