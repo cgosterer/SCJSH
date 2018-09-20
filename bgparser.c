@@ -9,7 +9,7 @@
 #include "exec.c"
 #include "getcmdpath.c"
 #include "exec_and_io.c"
-#include "background.c"
+#include "bbackground.c"
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
@@ -17,11 +17,11 @@ int executeTokens(char** instr, int numTokens);
 
 int main()
 {
+	queue = malloc(100 * sizeof(process));
         struct timeval start;
 	struct timeval end;
 	long int timedif;						// time difference between start and end of shell
 	int timedummy1 = gettimeofday(&start, NULL);			// timedummy1 only used to make sure return val doesnt mean error
-	//printf("%ld seconds\n", start.tv_sec);
 
 	const int INST_SIZE = 256;
 	int has_exit = 0;
@@ -83,8 +83,6 @@ int main()
 	return 0;
 }
 
-//reallocates instruction array to hold another token,
-//returns new pointer to instruction array
 char** addToken(char** instr, char* tok, int numTokens)
 {
 	int i;
@@ -166,22 +164,63 @@ int executeTokens(char** instr, int numTokens)
 
       else										// execute the command
 	{
-		//printf("#%s#\n", cmnd[0]);
 		if( getcmdloc(cmnd[0]) == false )					// if command doesnt exist show error message
 				printf("%s: command not found\n", cmnd[0]);
 		else
 		{
-			if (strcmp(cmnd[0], "/bin/sleep") == 0)
-			{	//printf("inside sleep");
-				execbg(cmnd);
+			if (strcmp(cmnd[0], "/bin/sleep") == 0 || strcmp(cmnd[0], "/bin/pwd") == 0)
+			{
+				bbexec(cmnd);									// execute in background
+				int q, status;
+                                for (q=1;q <= poscounter; q++)
+                                {
+                                        if (    waitpid( queue[q].pid, &status, WNOHANG) != 0   )               // was WNOHANG
+                                        {
+                                                if( queue[q].cmd != NULL && queue[q].printed == false)
+                                                {
+                                                        printf("[%d]+\t", q);
+                                                        printf("[%s]\n", queue[q].cmd);
+                                                        queue[q].printed = true;
+
+							bool donequeue = true;
+							int x;
+                					if(poscounter >= 1)
+                					for (x = 1; x <= poscounter; x++)
+                					{
+                        					if(queue[x].printed == false)
+                                					donequeue = false;
+                					}
+
+                					if(donequeue == true)
+                					{
+                        					free(queue);
+                        					queue = malloc(100 * sizeof(process));
+                        					poscounter = 0;
+                					}
+                                                }
+                                        }
+                                }
 			}
 
 			else
-			{	//printf("running myexec\n");
-				myexec(cmnd);
+			{
+				myexec(cmnd);									// execute in foreground
+				int q, status;
+				for (q=1;q <= poscounter; q++)
+				{
+					if (	waitpid( queue[q].pid, &status, WNOHANG) != 0	)		// was WNOHANG
+					{
+						if( queue[q].cmd != NULL && queue[q].printed == false)
+						{
+    			                        	printf("[%d]+\t", q);
+                        				printf("[%s]\n", queue[q].cmd);
+							queue[q].printed = true;
+						}
+					}
+				}
 			}
+
 		}
-		//printf("#%s#\n", cmnd[0]);
 	}
       free(cmnd);
       i = j;
