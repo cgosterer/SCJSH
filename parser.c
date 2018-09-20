@@ -16,6 +16,8 @@ int executeTokens(char** instr, int numTokens);
 
 int main()
 {
+	//queue = malloc(100 * sizeof(process));
+
         struct timeval start;
 	struct timeval end;
 	long int timedif;						// time difference between start and end of shell
