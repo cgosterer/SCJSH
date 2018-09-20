@@ -206,7 +206,7 @@ char* resolveSpecialChars(char* str){
 	return absPath;
 }
 
-char* removeDynamicChar(char* line, size_t end, size_t start){  // removes characters from a dynamic array
+char* removeDynamicChar(char* line, size_t start, size_t end){  // removes characters from a dynamic array
 
 
 	size_t number_characters = end - start + 1;
@@ -229,6 +229,7 @@ char* removeDynamicChar(char* line, size_t end, size_t start){  // removes chara
 }
 
 char* shrinkDirectory(char* path){   // removes a directory from a path
+  printf("The path passed in is %s\n", path);
 	int temp = strlen(path) - 1;
 	int arrayIndex = temp;
 	char deletedChar = path[temp];
@@ -248,6 +249,7 @@ char* shrinkDirectory(char* path){   // removes a directory from a path
 	}
 
 	char* newDynPath = removeDynamicChar(path, temp, arrayIndex);
+	printf("The returned string is %s\n", newDynPath);
         return newDynPath;
 }
 
