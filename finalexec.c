@@ -223,10 +223,8 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
                                 cmdsize++;
                                 i++;
                         }
-                        printf("the command size is %d\n", cmdsize);
 
-			 queue[poscounter].cmd = (char**)malloc( (cmdsize + 1) * sizeof(char*));
-
+			queue[poscounter].cmd = (char**)malloc( (cmdsize + 1) * sizeof(char*));
 
                         for (i = 0; i < cmdsize; i++)
                         {
