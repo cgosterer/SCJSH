@@ -87,7 +87,7 @@ int main()
 void freeBucket(char** bucket, int numTokens)
 {
   int i;
-  printf("Freeing from %s command", bucket[0]);
+  //printf("Freeing from %s command", bucket[0]);
   for(i = 0; i < numTokens; i++)
     {
       free(bucket[i]);
