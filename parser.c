@@ -13,6 +13,7 @@
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
 int executeTokens(char** instr, int numTokens);
+void freeBucket(char** bucket, int numTokens);
 
 int main()
 {
@@ -79,9 +80,19 @@ int main()
 	int timedummy2  = gettimeofday(&end, NULL);// timedummy2 only used to see if error is returned
 	timedif = end.tv_sec - start.tv_sec;
 
-	free(bucket);    			//free dynamic memory
 	printf("Exiting...\n\t Session Time:  %lds\n", timedif);
 	return 0;
+}
+
+void freeBucket(char** bucket, int numTokens)
+{
+  int i;
+  printf("Freeing from %s command", bucket[0]);
+  for(i = 0; i < numTokens; i++)
+    {
+      free(bucket[i]);
+    }
+  free(bucket);
 }
 
 //reallocates instruction array to hold another token,
@@ -104,7 +115,7 @@ char** addToken(char** instr, char* tok, int numTokens)
 	strcpy(new_arr[numTokens], tok);
 
 	if (numTokens > 0)
-		free(instr);
+	  freeBucket(instr, numTokens);
 	return new_arr;
 }
 
@@ -133,7 +144,11 @@ int executeTokens(char** instr, int numTokens)
 	}
       cmnd[k] = NULL;
       if(strcmp(cmnd[0], "exit") == 0)
-	return 1;
+	{
+	  free(cmnd);
+	  freeBucket(instr, numTokens);
+	  return 1;
+	}
       else if(strcmp(cmnd[0], "echo") == 0)
 	{
 	  for(k = 1; cmnd[k] != NULL; k++)
@@ -163,6 +178,7 @@ int executeTokens(char** instr, int numTokens)
                                 printf("%s: command not found\n", cmnd[0]);
 		else
 			myexecio(minusio, true);
+		free(minusio);
 	}
 
       else										// execute the command
@@ -175,5 +191,6 @@ int executeTokens(char** instr, int numTokens)
       free(cmnd);
       i = j;
     }
+  freeBucket(instr, numTokens);
   return 0;
 }
