@@ -34,6 +34,8 @@ bool getcmdloc(char * cmd)
 				fclose(canopen);
 				strcpy(cmd,testprefix);
 				//return testprefix;
+				free(testprefix);
+				free(envtok);
 				return true;
 			}
 		}
@@ -54,13 +56,17 @@ bool getcmdloc(char * cmd)
 				strcpy(cmd,testprefix);
                                 //return testprefix;
                                 fclose(canopen);
+				free(testprefix);
+				free(envtok);
 				return true;
                         }
 		}
 		docounter++;
+		free(testprefix);
 
 	}while(prefix != NULL);				// end while
 
+	free(envtok);
 	return false;
 }							// end getcmdpath
 
