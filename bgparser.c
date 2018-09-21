@@ -13,8 +13,6 @@
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
 int executeTokens(char** instr, int numTokens);
-void afterbgexec();							// after executing a background function run this command
-void afterregexec();
 
 int main()
 {
@@ -164,16 +162,10 @@ int executeTokens(char** instr, int numTokens)
                 else
                 {
                         if (strcmp(minusio[0], "/bin/sleep") == 0 || strcmp(minusio[0], "/bin/pwd") == 0)                     // needs to be changed if (background command)
-                        {                                                                                                     // set flags when parsing command to know how to call myexec
                                 myexec(minusio,1,1,0,0);
-                                afterbgexec();         		                                                              // execute in background
-                        }
 
                         else
-                        {
                                 myexec(minusio, 1 , 0, 0 ,0);                                                                 // execute in foreground
-                                afterregexec();
-                        }
                 }
 	}
 
@@ -184,16 +176,10 @@ int executeTokens(char** instr, int numTokens)
 		else
 		{
 			if (strcmp(cmnd[0], "/bin/sleep") == 0 || strcmp(cmnd[0], "/bin/pwd") == 0)			// needs to be changed if (background command)
-			{												// set flags when parsing command to know how to call myexec
 				myexec(cmnd,0,1,0,0);
-				afterbgexec();									// execute in background
-			}
 
 			else
-			{
 				myexec(cmnd, 0 , 0, 0 ,0);									// execute in foreground
-				afterregexec();
-			}
 		}
 	}
       free(cmnd);
@@ -202,65 +188,3 @@ int executeTokens(char** instr, int numTokens)
   return 0;
 }
 
-void afterbgexec()
-{
-				int q, status;
-                                for (q=1;q <= poscounter; q++)
-                                {
-                                        if (    waitpid( queue[q].pid, &status, WNOHANG) != 0   )               // was WNOHANG
-                                        {
-                                                if( queue[q].cmd[0] != NULL && queue[q].printed == false)
-                                                {
-                                                        printf("[%d]+\t[", q);
-                                                        int i = 0;
-                                                        while(queue[q].cmd[i] != NULL)
-                                                        {
-                                                                printf("%s ", queue[q].cmd[i]);
-                                                                i++;
-                                                        }
-                                                        printf("]\n");
-
-                                                        queue[q].printed = true;
-
-                                                        bool donequeue = true;
-                                                        int x;
-                                                        if(poscounter >= 1)
-                                                        for (x = 1; x <= poscounter; x++)
-                                                        {
-                                                                if(queue[x].printed == false)
-                                                                        donequeue = false;
-                                                        }
-
-                                                        if(donequeue == true)
-                                                        {
-                                                                free(queue);
-                                                                queue = malloc(100 * sizeof(process));
-                                                                poscounter = 0;
-                                                        }
-                                                }
-                                        }
-                                }
-}															// end afterbgexec
-
-void afterregexec()
-{
-				int q, status;
-                                for (q=1;q <= poscounter; q++)
-                                {
-                                        if (    waitpid( queue[q].pid, &status, WNOHANG) != 0   )               // was WNOHANG
-                                        {
-                                                if( queue[q].cmd != NULL && queue[q].printed == false)
-                                                {
-                                                        printf("[%d]+\t[", q);
-                                                        int i = 0;
-                                                        while(queue[q].cmd[i] != NULL)
-                                                        {
-                                                                printf("%s ", queue[q].cmd[i]);
-                                                                i++;
-                                                        }
-                                                        printf("]\n");
-                                                        queue[q].printed = true;
-                                                }
-                                        }
-                                }
-}															// end after reg exec

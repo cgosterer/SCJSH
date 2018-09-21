@@ -18,6 +18,8 @@ typedef struct process
 process * queue;		// the queue, allocated in parser.c main func
 int poscounter = 0;		// position in the queue
 
+void afterregexec();
+void afterbgexec();
 
 void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// this will exec a given command given the proper path location,
 {
@@ -188,7 +190,7 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
                         printf("\n");
 
 			waitpid(pid, &status, 0);						// -1 was pid
-			return;
+			//return;
 		}
 
 		if (isbg == true && hasio == false)						// if it is only a bg process
@@ -234,22 +236,78 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 			queue[poscounter].cmd[cmdsize] = NULL;
 
                	 	waitpid(pid, &status, WNOHANG);
-			return;
+			//return;
 		}
 
 		else if( hasio == false && isbg == false)					// regular command ?
 			waitpid(pid, &status, 0);
-
 	}
+
+	if (isbg == true)
+		afterbgexec();
+	if (isbg == false)
+		afterregexec();
 }
 
-/*
-int main()
+void afterbgexec()
 {
-	char * cmd1[4] = {"/bin/ls", "-l", "-a", NULL};	// must adjust parser to get command location in the PATH
-	char * cmd2[2] = {"/bin/pwd", NULL};		// also must count number of flags arguments so we know how big to make char * cmdx
-	myexec(cmd2, 1,1,0,0);
-	return 0;
-}
+				int q, status;
+                                for (q=1;q <= poscounter; q++)
+                                {
+                                        if (    waitpid( queue[q].pid, &status, WNOHANG) != 0   )               // was WNOHANG
+                                        {
+                                                if( queue[q].cmd[0] != NULL && queue[q].printed == false)
+                                                {
+                                                        printf("[%d]+\t[", q);
+                                                        int i = 0;
+                                                        while(queue[q].cmd[i] != NULL)
+                                                        {
+                                                                printf("%s ", queue[q].cmd[i]);
+                                                                i++;
+                                                        }
+                                                        printf("]\n");
 
-*/
+                                                        queue[q].printed = true;
+
+                                                        bool donequeue = true;
+                                                        int x;
+                                                        if(poscounter >= 1)
+                                                        for (x = 1; x <= poscounter; x++)
+                                                        {
+                                                                if(queue[x].printed == false)
+                                                                        donequeue = false;
+                                                        }
+
+                                                        if(donequeue == true)
+                                                        {
+                                                                free(queue);
+                                                                queue = malloc(100 * sizeof(process));
+                                                                poscounter = 0;
+                                                        }
+                                                }
+                                        }
+                                }
+}															// end afterbgexec
+
+void afterregexec()
+{
+				int q, status;
+                                for (q=1;q <= poscounter; q++)
+                                {
+                                        if (    waitpid( queue[q].pid, &status, WNOHANG) != 0   )               // was WNOHANG
+                                        {
+                                                if( queue[q].cmd != NULL && queue[q].printed == false)
+                                                {
+                                                        printf("[%d]+\t[", q);
+                                                        int i = 0;
+                                                        while(queue[q].cmd[i] != NULL)
+                                                        {
+                                                                printf("%s ", queue[q].cmd[i]);
+                                                                i++;
+                                                        }
+                                                        printf("]\n");
+                                                        queue[q].printed = true;
+                                                }
+                                        }
+                                }
+}
