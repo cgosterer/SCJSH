@@ -1,3 +1,4 @@
+#include <libgen.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -77,7 +78,8 @@ int main()
 	int timedummy2  = gettimeofday(&end, NULL);// timedummy2 only used to see if error is returned
 	timedif = end.tv_sec - start.tv_sec;
 
-	free(queue);
+	//free(queue);
+	freeq();
 	free(bucket);    			//free dynamic memory
 	printf("Exiting...\n\t Session Time:  %lds\n", timedif);
 	return 0;

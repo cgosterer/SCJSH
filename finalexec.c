@@ -1,3 +1,4 @@
+#include <libgen.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -20,6 +21,7 @@ int poscounter = 0;		// position in the queue
 
 void afterregexec();
 void afterbgexec();
+void freeq();
 
 void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// this will exec a given command given the proper path location,
 {
@@ -108,7 +110,8 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 
 			if(donequeue == true)
 			{
-				free(queue);
+				//free(queue);
+				freeq();
 				queue = malloc(100 * sizeof(process));
 				poscounter = 0;
 			}
@@ -207,7 +210,8 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 
 			if(donequeue == true)
 			{
-				free(queue);
+				//free(queue);
+				freeq();
 				queue = malloc(100 * sizeof(process));
 				poscounter = 0;
 			}
@@ -262,6 +266,16 @@ void afterbgexec()
                                                         int i = 0;
                                                         while(queue[q].cmd[i] != NULL)
                                                         {
+								if (i == 0)
+								{
+									char * filename = (char*) malloc( strlen(queue[q].cmd[i] + 1 * sizeof(char) ));
+									strcpy(filename, basename(queue[q].cmd[i]));
+									printf("%s ", filename);
+									free(filename);
+									i++;
+									continue;
+								}
+
                                                                 printf("%s ", queue[q].cmd[i]);
                                                                 i++;
                                                         }
@@ -280,7 +294,8 @@ void afterbgexec()
 
                                                         if(donequeue == true)
                                                         {
-                                                                free(queue);
+                                                                //free(queue);
+								freeq();
                                                                 queue = malloc(100 * sizeof(process));
                                                                 poscounter = 0;
                                                         }
@@ -302,6 +317,15 @@ void afterregexec()
                                                         int i = 0;
                                                         while(queue[q].cmd[i] != NULL)
                                                         {
+								if (i == 0)
+                                                                {
+                                                                        char * filename = (char*)malloc(strlen(queue[q].cmd[i] + 1 * sizeof(char)));
+                                                                        strcpy(filename, basename(queue[q].cmd[i]));
+                                                                        printf("%s ", filename);
+                                                                        free(filename);
+                                                                        i++;
+                                                                        continue;
+                                                                }
                                                                 printf("%s ", queue[q].cmd[i]);
                                                                 i++;
                                                         }
@@ -310,4 +334,19 @@ void afterregexec()
                                                 }
                                         }
                                 }
+}
+
+void freeq()                                                    // free memory from the queue
+{
+                int i;
+                for (i = 1; i <= poscounter; i++)
+                {
+                        int x = 0;
+                        while(queue[i].cmd[x] != NULL )
+                        {
+                                free(queue[i].cmd[x]);
+                                x++;
+                        }
+                }
+                free(queue);
 }
