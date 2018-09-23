@@ -9,7 +9,7 @@ char* resolveSpecialChars(char* str); //resolves . .. ~
 char* replaceSpecialChars(char* dest, size_t start, size_t end, const char* source); //replaces characters bewtween start and end. source is inserted
 char* removeDynamicChar(char* line, size_t start, size_t end); // removes chars from dynamic arrays
 char* strPush(char* dest, char source); // pushes a char onto a dynam array
-//for testing
+/*for testing
 int main(){
 	//printf("PATH : %s\n", getenv("PATH"));
    	//printf("HOME : %s\n", getenv("HOME"));
@@ -59,7 +59,7 @@ int main(){
 	} else {
 		printf("Test text pwd is right\n");
 	}
-	*/
+	///
 	printf("Starting .. real\n");
         char* goUp = "/home/majors/molina";
         if(strcmp(goUp, resolveSpecialChars("..")) != 0){
@@ -75,7 +75,8 @@ int main(){
 
 	return 0;
 }
-//end of testing
+end of testing*/
+	
 char* strPush(char* dest, char ch){
 	size_t setLength = strlen(dest) + 2;
 	char* dynamicStr = (char*)calloc(setLength, sizeof(char));
@@ -229,7 +230,7 @@ char* removeDynamicChar(char* line, size_t start, size_t end){  // removes chara
 }
 
 char* shrinkDirectory(char* path){   // removes a directory from a path
-  printf("The path passed in is %s\n", path);
+  //printf("The path passed in is %s\n", path);
 	int temp = strlen(path) - 1;
 	int arrayIndex = temp;
 	char deletedChar = path[temp];
@@ -249,7 +250,7 @@ char* shrinkDirectory(char* path){   // removes a directory from a path
 	}
 
 	char* newDynPath = removeDynamicChar(path, temp, arrayIndex);
-	printf("The returned string is %s\n", newDynPath);
+	//printf("The returned string is %s\n", newDynPath);
         return newDynPath;
 }
 
