@@ -142,10 +142,11 @@ void changeDir(char* target)
   free(buff);
 }
 
-int executeTokens(char** instr, int numTokens)
+int executeTokens(char** instruct, int numTokens)
 {
   int i, j, k;
-  char **cmnd;
+  char **instr = instruct;
+  char **cmnd = 0;
   char *buff = 0;
   int isbg = 0;
   int hasRedir = 0;
@@ -173,17 +174,14 @@ int executeTokens(char** instr, int numTokens)
 	{
 	  cmnd[k] = instr[k + i];
 	}
-      for(k = 0; k < i; k++)
-	free(instr[k]);
-      for(k = j; k < numTokens; k++)
-	free(instr[k]);
-      free(instr);
       instr = cmnd;
       cmnd = 0;
       numTokens = j - i;
     }
   if(strcmp(instr[0], "exit") == 0)
     {
+      if(instr != instruct)
+	free(instr);
       return 1;
     }
   //printTokens(instr, numTokens);
@@ -194,6 +192,8 @@ int executeTokens(char** instr, int numTokens)
       if(strcmp(instr[i], "&") == 0)
 	{
 	  printf("Error: Unexpected \'&\' token\n");
+	  if(instr != instruct)
+	    free(instr);
 	  return 0;
 	}
       else if(strcmp(instr[i], "<") == 0)
@@ -206,6 +206,8 @@ int executeTokens(char** instr, int numTokens)
       if( strcmp(instr[0], "echo") != 0 && strcmp(instr[0], "cd") != 0 && getcmdloc(instr[0]) == false )
 	{
 	  printf("Error: Command %s not found", instr[0]);
+	  if(instr != instruct)
+	    free(instr);
 	  return 0;
 	}
 
@@ -223,6 +225,8 @@ int executeTokens(char** instr, int numTokens)
 		{
 		  free(cmnd);
 		  printf("Error: Could Not Open or Create Output Redirection File\n");
+		  if(instr != instruct)
+		    free(instr);
 		  return 0;
 		}
 	      i++;
@@ -234,6 +238,8 @@ int executeTokens(char** instr, int numTokens)
 		{
 		  free(cmnd);
 		  printf("Error: Input Redirection File Not Found\n");
+		  if(instr != instruct)
+		    free(instr);
 		  return 0;
 		}
 	      i++;
@@ -252,6 +258,8 @@ int executeTokens(char** instr, int numTokens)
       else
 	myexec(cmnd, hasio, isbg, k, j);
       free(cmnd);
+      if(instr != instruct)
+	free(instr);
       return 0;
     }
   //printf("No redirection detected\n");
