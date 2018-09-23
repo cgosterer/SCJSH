@@ -66,50 +66,23 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 			char pfilename[30];		// proc filename
 			char stats[150];
 
+			char * words[7];
+                        char * numbers[7];
+                        int i;
+                        for (i = 0; i < 7; i++)
+                        {
+                                words[i] = (char*)malloc(40 * sizeof(char));
+                                numbers[i] = (char*)malloc(40 * sizeof(char));
+                        }
+
 			sprintf(pfilename, "/proc/%d/io", pid);				// x was pid
 			FILE * readfile = fopen(pfilename, "r");
 
-			fscanf(readfile, "%s", stats);
-			printf("\t\t%s", stats);
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-			printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        printf("\n");
-
-		 	fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t%s", stats);
-                        printf("\n");
+			 for (i = 0; i < 7; i ++)
+                        {
+                                fscanf(readfile, "%s", words[i]);
+                                fscanf(readfile, "%s", numbers[i]);
+                        }
 
 			int status,x;
 			bool donequeue = true;
@@ -136,7 +109,7 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 			queue[poscounter].pid = pid;
 
 			int cmdsize = 0;
-                        int i = 0;
+                        i = 0;
                         while(cmd[i] != NULL)
                         {
                                 cmdsize++;
@@ -153,59 +126,95 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
                         queue[poscounter].cmd[cmdsize] = NULL;
 
                 	waitpid(pid, &status, WNOHANG);
+
+			for (i = 0; i < 7; i++)
+                        {
+                                if(i < 4)
+                                {
+                                printf("\t\t%s", words[i]);
+                                printf("\t\t\t%s", numbers[i]);
+                                printf("\n");
+                                }
+
+                                if (i == 6)
+                                {
+                                        printf("\t\t%s", words[i]);
+                                        printf("\t%s", numbers[i]);
+                                        printf("\n");
+                                }
+
+                                if(i > 4 && i < 6)
+                                {
+                                        printf("\t\t%s", words[i]);
+                                        printf("\t\t%s", numbers[i]);
+                                        printf("\n");
+                                }
+                        }
+
+			for (i = 0; i < 7; i ++)
+                        {
+                                free(words[i]);
+                                free(numbers[i]);
+                        }
+
+
 		}
 
 		if (hasio == true && isbg == false)
 		{	int status;
 			char pfilename[30];					// proc filename
-			char stats[150];					// the stats from the proc file
+			//char stats[150];					// the stats from the proc file
+
+			char * words[7];
+			char * numbers[7];
+			int i;
+			for (i = 0; i < 7; i++)
+			{
+				words[i] = (char*)malloc(40 * sizeof(char));
+				numbers[i] = (char*)malloc(40 * sizeof(char));
+			}
+
 
 			sprintf(pfilename, "/proc/%d/io", pid);				// x was pid
 			FILE * readfile = fopen(pfilename, "r");
 
-			fscanf(readfile, "%s", stats);
-			printf("\t\t%s", stats);
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-			printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        printf("\n");
-
-			fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        printf("\n");
-
-		 	fscanf(readfile, "%s", stats);
-                        printf("\t\t%s", stats);
-                        fscanf(readfile, "%s", stats);
-                        printf("\t%s", stats);
-                        printf("\n");
+			for (i = 0; i < 7; i ++)
+			{
+				fscanf(readfile, "%s", words[i]);
+				fscanf(readfile, "%s", numbers[i]);
+			}
 
 			waitpid(pid, &status, 0);						// -1 was pid
+
+			for (i = 0; i < 7; i++)
+			{
+				if(i < 4)
+				{
+				printf("\t\t%s", words[i]);
+                        	printf("\t\t\t%s", numbers[i]);
+				printf("\n");
+				}
+
+				if (i == 6)
+				{
+					printf("\t\t%s", words[i]);
+                		        printf("\t%s", numbers[i]);
+		                        printf("\n");
+				}
+
+				if(i > 4 && i < 6)
+				{
+					printf("\t\t%s", words[i]);
+                        		printf("\t\t%s", numbers[i]);
+                        		printf("\n");
+				}
+			}
+
+			for (i = 0; i < 7; i ++)
+                        {
+                                free(words[i]);
+                                free(numbers[i]);
+                        }
 			//return;
 		}
 
