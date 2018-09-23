@@ -1,5 +1,5 @@
 all:
-	gcc -o shell.exe parser.c
+	gcc -o shell.exe bgparser.c
 
 clean:
 	rm *.exe *~

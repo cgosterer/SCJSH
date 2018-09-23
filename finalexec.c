@@ -25,7 +25,8 @@ void freeq();
 
 void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// this will exec a given command given the proper path location,
 {
-	int status;
+        int status;
+	int i;
 	pid_t pid = fork();
 
 	if (pid == -1)					// error forking, this has never occured yet
@@ -35,6 +36,24 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 
 	else if (pid == 0)				// inside child
 	{
+		if(input != 0)
+			dup2(input,STDIN_FILENO);				// stdin_fileno part of unistd should have stdin fileno in it
+
+		if(output != 0)
+			dup2(output,STDOUT_FILENO);
+		
+		if(strcmp(cmd[0], "echo") == 0)
+		  {
+		    //printf("Echoing\n");
+		    for(i = 1; cmd[i] != NULL; i++)
+		      {
+			printf("%s ", cmd[i]);
+		      }
+		    printf("\n");
+		    exit(0);
+		  }
+
+		//printf("Executing %s with input : %d and output : %d\n", cmd[0], input, output);
 		execv(cmd[0], cmd);
 		printf("problem executing %s\n", cmd[0]);
 		exit(1);
@@ -42,12 +61,6 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 
 	else									// inside parent
 	{
-		if(input != 0)
-			dup2(input,STDIN_FILENO);				// stdin_fileno part of unistd should have stdin fileno in it
-
-		if(output != 0)
-			dup2(output,STDOUT_FILENO);
-
 		if(hasio == true && isbg == true)				// attempt at combining background and io commands
 		{
 			char pfilename[30];		// proc filename
@@ -244,7 +257,10 @@ void myexec(char ** cmd, bool hasio, bool isbg, int input, int output)				// thi
 		}
 
 		else if( hasio == false && isbg == false)					// regular command ?
+		  {
 			waitpid(pid, &status, 0);
+      			//printf("%s has finished waiting on it's child\n", cmd[0]);
+		  }
 	}
 
 	if (isbg == true)
