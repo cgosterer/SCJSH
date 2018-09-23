@@ -10,6 +10,7 @@
 #include "./env.c"
 #include "getcmdpath.c"
 #include "finalexec.c"
+#include "specialcases.c"
 
 char** addToken(char ** instr, char * tok, int numTokens);
 void printTokens(char** instr, int numTokens);
@@ -130,6 +131,10 @@ void changeDir(char* target)
 {
   char* buff;
   int k;
+  if(target[0] == '~')
+    {
+      target = resolveSpecialChars(target);
+    }
   chdir(target);
   k = pathconf(".", _PC_PATH_MAX) * sizeof(char);
   buff = (char *) malloc(k);
