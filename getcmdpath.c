@@ -13,6 +13,14 @@ bool getcmdloc(char * cmd)
 	char * testprefix;				// will hold the finalpath of the command
 	char * prefix;					// will hold each path token from the $PATH variablke
 
+	if(cmd[0] == '/'){
+	  if(canopen = fopen(cmd, "r")){
+	    fclose(canopen);
+	    return true;
+	  }
+	  else return false;
+	}
+
 	int docounter = 1;
 	do
 	{

@@ -307,7 +307,7 @@ int recursivePipe(char** instr, int numTokens, int hasio, int isbg, int input)
 	{
 	  if( strcmp(instr[0], "echo") != 0 && strcmp(instr[0], "cd") != 0 && getcmdloc(instr[0]) == false )
 	    {
-	      printf("Error: Command %s not found", instr[0]);
+	      printf("Error: Command %s not found\n", instr[0]);
 	      free(cmnd);
 	      return 0;
 	    }
