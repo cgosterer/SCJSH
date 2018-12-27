@@ -1,5 +1,4 @@
 # SCJSH - The Steven, Chris, & John Shell
-COP4610 project 1
 
 Division of Labor:
 
@@ -40,14 +39,14 @@ How to Compile executable using makefile:
 						- can also run clean to get rid of files you do not want to keep
 
 Known Bugs and unfinished portions of the project:
-io built in returns all zeroes
+io built in returns all zeroes as directed by instructor (this was determined to be acceptable, only wanted to access the file)
 Command is read into an array of fixed length 256, as such a command with more than 255 characters may cause issues
 When io is run in the background, the io command will print its results before the inner command executes
-Background queue maxes out at 100 bg processes at once (includes completed processes, resets if all processes complete) {Limit could easily be increased, with more memroy consumption}
+Background queue maxes out at 100 bg processes at once (includes completed processes, resets if all processes complete) {Limit could easily be increased, with more memory consumption}
 Does not run scripts, can only run builtins and binary executables
 Cannot ctrl-Z to suspend a process, will suspend entire shell
 
-Content of Tar Archive and description of files:
+Content of Tar Archive and description of necessary files:
 bgparser.c - Driver file, handles all aspects of tokenizing user input, determining I/O redirection, setting up pipes, and checking for background processing
 	   Also has cd and exit built in commands
 env.c - Replaces string sections of format $NAME with VALUE from environemnt variable (used by parser and path resolution).  Also generates prompt
@@ -57,4 +56,4 @@ specialcases.c - Utility functions used for parsing ~ and other special cases in
 
 Extra Credit Note: Piping is implemented to allow unlimited pipes through recursion.  Please grade for extra credit!
 
-Tested to run on Linprog and Ubuntu 16.04 LTS
+Tested to run on Linprog (fsu servers) and Ubuntu 16.04 LTS
